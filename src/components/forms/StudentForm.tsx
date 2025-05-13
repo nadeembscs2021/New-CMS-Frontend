@@ -17,6 +17,7 @@ const schema = z.object({
     .min(8, { message: "Password must be at least 8 characters long!" }),
   firstName: z.string().min(1, { message: "First name is required!" }),
   lastName: z.string().min(1, { message: "Last name is required!" }),
+  father: z.string().min(1, { message: "Father name is required!" }),
   phone: z.string().min(1, { message: "Phone is required!" }),
   address: z.string().min(1, { message: "Address is required!" }),
   bloodType: z.string().min(1, { message: "Blood Type is required!" }),
@@ -94,6 +95,14 @@ const StudentForm = ({
           register={register}
           error={errors.lastName}
         />
+        <InputField
+          label="Father Name"
+          name="fatherName"
+          defaultValue={data?.lastName}
+          register={register}
+          error={errors.lastName}
+        />
+
         <InputField
           label="Phone"
           name="phone"

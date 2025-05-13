@@ -31,17 +31,18 @@ const menuItems = [
         visible: ["admin", "teacher"],
       },
       {
-        icon: "/subject.png",
-        label: "Subjects",
-        href: "/list/subjects",
-        visible: ["admin"],
-      },
-      {
         icon: "/class.png",
         label: "Classes",
         href: "/list/classes",
         visible: ["admin", "teacher"],
       },
+      {
+        icon: "/subject.png",
+        label: "Subjects",
+        href: "/list/subjects",
+        visible: ["admin"],
+      },
+
       {
         icon: "/lesson.png",
         label: "Lessons",

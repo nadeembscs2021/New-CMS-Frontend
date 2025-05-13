@@ -1,16 +1,17 @@
+"use client";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { classesData, role } from "@/lib/data";
+import { role } from "@/lib/data";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type Class = {
-  id: number;
-  name: string;
   capacity: number;
-  grade: number;
-  supervisor: string;
+  className: string;
+  section: string;
+  _id: string;
 };
 
 const columns = [
@@ -24,12 +25,7 @@ const columns = [
     className: "hidden md:table-cell",
   },
   {
-    header: "Grade",
-    accessor: "grade",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Supervisor",
+    header: "Section",
     accessor: "supervisor",
     className: "hidden md:table-cell",
   },
@@ -40,21 +36,37 @@ const columns = [
 ];
 
 const ClassListPage = () => {
+  const [classesColumn, setClassesColumn] = useState<Class[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/class");
+      const data = await apiResponse.json();
+
+      setClassesColumn(data.data);
+    };
+    fetchData();
+  }, []);
+
   const renderRow = (item: Class) => (
     <tr
-      key={item.id}
+      key={item._id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="flex items-center gap-4 p-4">{item.name}</td>
+      <td className="flex items-center gap-4 p-4">{item.className}</td>
       <td className="hidden md:table-cell">{item.capacity}</td>
-      <td className="hidden md:table-cell">{item.grade}</td>
-      <td className="hidden md:table-cell">{item.supervisor}</td>
+      <td className="hidden md:table-cell">{item.section}</td>
       <td>
         <div className="flex items-center gap-2">
           {role === "admin" && (
             <>
-              <FormModal table="class" type="update" data={item} />
-              <FormModal table="class" type="delete" id={item.id} />
+              <FormModal
+                table="class"
+                type="update"
+                data={item}
+                id={item._id}
+              />
+              <FormModal table="class" type="delete" id={item._id} />
             </>
           )}
         </div>
@@ -81,7 +93,7 @@ const ClassListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={classesData} />
+      <Table columns={columns} renderRow={renderRow} data={classesColumn} />
       {/* PAGINATION */}
       <Pagination />
     </div>
