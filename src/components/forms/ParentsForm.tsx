@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const schema = z.object({
   username: z
@@ -16,39 +16,24 @@ const schema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   phone: z.string().min(1, "Phone is required"),
   address: z.string().min(1, "Address is required"),
-  bloodType: z.string().min(1, "Blood type is required"),
-  birthday: z.string().min(1, "Birthday is required"),
-  parentName: z.string().min(1, "Parent name is required"),
-  parentPhone: z.string().min(1, "Parent phone is required"),
-  class: z.string().min(1, "Class is required"),
-  section: z.string().min(1, "Section is required"),
   gender: z.enum(["male", "female", "other"], {
     required_error: "Gender is required",
     invalid_type_error: "Select a valid gender",
   }),
+  studentName: z.string().min(1, "Student name is required"),
+  img: z.string().optional(),
 });
 
-type StudentFormValues = z.infer<typeof schema>;
+type ParentFormValues = z.infer<typeof schema>;
 
-const CLASS_OPTIONS = [
-
-  { id: "1", name: "1st Year" },
-  { id: "2", name: "2nd Year" },
-];
-
-const SECTION_OPTIONS = [
-  { id: "a", name: "Section A" },
-  { id: "b", name: "Section B" },
-  { id: "c", name: "Section C" },
-  { id: "d", name: "Section D" },
-];
-
-const StudentForm = ({
+const ParentsForm = ({
   type,
   data,
+  onClose,
 }: {
   type: "create" | "update";
   data?: any;
+  onClose?: () => void;
 }) => {
   const {
     register,
@@ -57,27 +42,27 @@ const StudentForm = ({
     setValue,
     watch,
     reset,
-  } = useForm<StudentFormValues>({
+  } = useForm<ParentFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       ...data,
-      birthday: data?.birthday
-        ? new Date(data.birthday).toISOString().split("T")[0]
-        : "",
     },
   });
 
   const [imageUploading, setImageUploading] = useState(false);
   const profileImage = watch("img");
 
-  const onSubmit = handleSubmit(async (formData) => {
+  const onSubmit = async (formData: ParentFormValues) => {
     try {
       console.log("Form submitted:", formData);
       // Add your form submission logic here
+      if (onClose) {
+        onClose();
+      }
     } catch (error) {
       console.error("Submission error:", error);
     }
-  });
+  };
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -85,15 +70,17 @@ const StudentForm = ({
         {/* Header */}
         <div className="p-6 border-b bg-white sticky top-0 z-10">
           <h1 className="text-2xl font-bold text-gray-800">
-            {type === "create"
-              ? "Create New Student"
-              : "Update Student Profile"}
+            {type === "create" ? "Create New Parent" : "Update Parent Profile"}
           </h1>
         </div>
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <form onSubmit={onSubmit} className="space-y-8">
+          <form
+            id="parentForm"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             {/* Profile Image Upload */}
             <div className="flex flex-col items-center mb-8">
               <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mb-4 group transition-all duration-300">
@@ -194,44 +181,17 @@ const StudentForm = ({
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Birthday
+                    Username
                   </label>
                   <input
-                    type="date"
-                    {...register("birthday")}
+                    {...register("username")}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.birthday ? "border-red-500" : "border-gray-300"
+                      errors.username ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.birthday && (
+                  {errors.username && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.birthday.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Blood Type
-                  </label>
-                  <select
-                    {...register("bloodType")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.bloodType ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select Blood Type</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                  </select>
-                  {errors.bloodType && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.bloodType.message}
+                      {errors.username.message}
                     </p>
                   )}
                 </div>
@@ -245,22 +205,6 @@ const StudentForm = ({
                 Contact Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Username
-                  </label>
-                  <input
-                    {...register("username")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
-                      errors.username ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.username && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.username.message}
-                    </p>
-                  )}
-                </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Email
@@ -294,7 +238,7 @@ const StudentForm = ({
                     </p>
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Address
                   </label>
@@ -313,98 +257,26 @@ const StudentForm = ({
               </div>
             </div>
 
-            {/* Academic Information */}
+            {/* Student Information */}
             <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
                 <span className="w-1 h-6 bg-indigo-500 rounded-full mr-2"></span>
-                Academic Information
+                Student Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Class
-                  </label>
-                  <select
-                    {...register("class")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 ${
-                      errors.class ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select Class</option>
-                    {CLASS_OPTIONS.map((classItem) => (
-                      <option key={classItem.id} value={classItem.id}>
-                        {classItem.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.class && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.class.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Section
-                  </label>
-                  <select
-                    {...register("section")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 ${
-                      errors.section ? "border-red-500" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Select Section</option>
-                    {SECTION_OPTIONS.map((section) => (
-                      <option key={section.id} value={section.id}>
-                        {section.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.section && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.section.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Guardian Information */}
-            <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
-                <span className="w-1 h-6 bg-purple-500 rounded-full mr-2"></span>
-                Guardian Information
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Parent/Guardian Name
+                    Student Name
                   </label>
                   <input
-                    {...register("parentName")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 ${
-                      errors.parentName ? "border-red-500" : "border-gray-300"
+                    {...register("studentName")}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 ${
+                      errors.studentName ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.parentName && (
+                  {errors.studentName && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.parentName.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Phone Number
-                  </label>
-                  <input
-                    {...register("parentPhone")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 ${
-                      errors.parentPhone ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.parentPhone && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.parentPhone.message}
+                      {errors.studentName.message}
                     </p>
                   )}
                 </div>
@@ -425,6 +297,7 @@ const StudentForm = ({
             </button>
             <button
               type="submit"
+              form="parentForm"
               disabled={isSubmitting}
               className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
                 isSubmitting ? "opacity-70 cursor-not-allowed" : ""
@@ -433,8 +306,8 @@ const StudentForm = ({
               {isSubmitting
                 ? "Processing..."
                 : type === "create"
-                ? "Create Student"
-                : "Update Student"}
+                ? "Create Parent"
+                : "Update Parent"}
             </button>
           </div>
         </div>
@@ -464,4 +337,4 @@ const StudentForm = ({
   );
 };
 
-export default StudentForm;
+export default ParentsForm;
