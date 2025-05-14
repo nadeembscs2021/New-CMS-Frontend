@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type Class = {
-  capacity: number;
+  capacity: string;
   className: string;
   section: string;
   _id: string;

@@ -30,11 +30,12 @@ const ClassForm = ({
     defaultValues: {
       className: data?.className || "",
       section: data?.section || "",
-      capacity: data?.capacity || "",
+      capacity: data?.capacity.toString() || "",
     },
   });
 
   const onSubmit = handleSubmit(async (formData) => {
+    console.log(formData)
     let apiResponse;
     if (type === "create") {
       apiResponse = await fetch("http://localhost:4000/api/v1/class", {
@@ -111,7 +112,7 @@ const ClassForm = ({
               Capacity
             </label>
             <input
-              type="number"
+              type="text"
               {...register("capacity")}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter capacity"
