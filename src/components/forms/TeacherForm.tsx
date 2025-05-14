@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import Image from "next/image";
-import { useState } from "react";
+import "./teacherForm.module.css";
 
 const schema = z.object({
   username: z
@@ -12,47 +12,31 @@ const schema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be at most 20 characters"),
   email: z.string().email("Invalid email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  name: z.string().min(1, "First name is required"),
   phone: z.string().min(1, "Phone is required"),
   address: z.string().min(1, "Address is required"),
   bloodType: z.string().min(1, "Blood type is required"),
-  birthday: z.string().min(1, "Birthday is required"),
-  sex: z.enum(["male", "female", "other"], {
+  birthDate: z.string().min(1, "Birthday is required"),
+  classId: z.string().min(1, "Please select a class"),
+  subject: z.string().min(1, "Please select a subject"),
+  gender: z.enum(["male", "female", "other"], {
     required_error: "Gender is required",
     invalid_type_error: "Select a valid gender",
   }),
-  classes: z.string().min(1, "Please select a class"),
-  subjects: z.string().min(1, "Please select a subject"),
-  img: z.string().optional(),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  // img: z.string().optional(),
 });
 
 type TeacherFormValues = z.infer<typeof schema>;
 
-const CLASS_OPTIONS = [
-  { id: "1st-year", name: "1st Year" },
-  { id: "2nd-year", name: "2nd Year" },
-  { id: "both-class", name: "Both" },
-];
-
-const SUBJECT_OPTIONS = [
-  { id: "computer-science", name: "Computer Science" },
-  { id: "maths", name: "Maths" },
-  { id: "physics", name: "Physics" },
-  { id: "biology", name: "Biology" },
-  { id: "chemistry", name: "Chemistry" },
-  { id: "english", name: "English" },
-  { id: "urdu", name: "Urdu" },
-  { id: "pakstudy", name: "PakStudy" },
-  { id: "islamiyat", name: "Islamiyat" },
-];
-
 const TeacherForm = ({
   type,
   data,
+  setOpen,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: (open: boolean) => void;
 }) => {
   const {
     register,
@@ -65,41 +49,83 @@ const TeacherForm = ({
     resolver: zodResolver(schema),
     defaultValues: {
       ...data,
-      birthday: data?.birthday
-        ? new Date(data.birthday).toISOString().split("T")[0]
+      birthDate: data?.birthDate
+        ? new Date(data.birthDate).toISOString().split("T")[0]
         : "",
-      classes: data?.classes || "",
-      subjects: data?.subjects || "",
-      img: data?.img || "",
+      classId: data?.classId || "",
+      subject: data?.subject || "",
+      // img: data?.img || "",
     },
   });
 
-  const [imageUploading, setImageUploading] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState({
-    classes: false,
-    subjects: false,
-    gender: false,
-  });
+  const [classes, setClasses] = useState([
+    {
+      _id: "",
+      className: "",
+    },
+  ]);
+  const [subjects, setSubjects] = useState([
+    {
+      _id: "",
+      name: "",
+    },
+  ]);
 
-  const selectedClasses = watch("classes") || "";
-  const selectedSubjects = watch("subjects") || "";
-  const profileImage = watch("img");
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/class");
+      const data = await apiResponse.json();
 
-  const onSubmit = handleSubmit(async (data) => {
+      if (data.success) {
+        setClasses(data.data);
+      }
+    };
+
+    const fetchSubjects = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/subject");
+      const data = await apiResponse.json();
+
+      if (data.success) {
+        setSubjects(data.data);
+      }
+    };
+
+    fetchClasses();
+    fetchSubjects();
+  }, []);
+
+  const onSubmit = handleSubmit(async (formData) => {
     try {
-      console.log("Form submitted:", data);
-      // Add your form submission logic here
+      let apiResponse;
+      if (type === "create") {
+        apiResponse = await fetch("http://localhost:4000/api/v1/teacher", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      } else if (type === "update") {
+        apiResponse = await fetch(
+          `http://localhost:4000/api/v1/teacher/${data._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+      }
+      const response = await apiResponse?.json();
+      if (response.success) {
+        setOpen(false);
+      }
+      console.log(response);
     } catch (error) {
       console.error("Submission error:", error);
     }
   });
-
-  const toggleDropdown = (field: keyof typeof dropdownOpen) => {
-    setDropdownOpen((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
-  };
 
   return (
     // Wrapper with fixed height and scrolling behavior
@@ -116,9 +142,9 @@ const TeacherForm = ({
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <form onSubmit={onSubmit} className="space-y-8">
+          <form onSubmit={onSubmit} action="#" className="space-y-8">
             {/* Profile Image Upload */}
-            <div className="flex flex-col items-center mb-8">
+            {/* <div className="flex flex-col items-center mb-8">
               <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mb-4 group transition-all duration-300">
                 <Image
                   src={profileImage || "/noAvatar.png"}
@@ -153,7 +179,7 @@ const TeacherForm = ({
                   }
                 }}
               />
-            </div>
+            </div> */}
 
             {/* Authentication Information */}
             <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
@@ -195,6 +221,23 @@ const TeacherForm = ({
                     </p>
                   )}
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    {...register("password")}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -204,36 +247,20 @@ const TeacherForm = ({
                 <span className="w-1 h-6 bg-teal-500 rounded-full mr-2"></span>
                 Personal Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className=" space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    First Name
+                    Full Name
                   </label>
                   <input
-                    {...register("firstName")}
+                    {...register("name")}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.firstName ? "border-red-500" : "border-gray-300"
+                      errors.name ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.firstName && (
+                  {errors.name && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.firstName.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <input
-                    {...register("lastName")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.lastName ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.lastName.message}
+                      {errors.name.message}
                     </p>
                   )}
                 </div>
@@ -291,14 +318,14 @@ const TeacherForm = ({
                   </label>
                   <input
                     type="date"
-                    {...register("birthday")}
+                    {...register("birthDate")}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.birthday ? "border-red-500" : "border-gray-300"
+                      errors.birthDate ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.birthday && (
+                  {errors.birthDate && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.birthday.message}
+                      {errors.birthDate.message}
                     </p>
                   )}
                 </div>
@@ -307,9 +334,9 @@ const TeacherForm = ({
                     Gender
                   </label>
                   <select
-                    {...register("sex")}
+                    {...register("gender")}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
-                      errors.sex ? "border-red-500" : "border-gray-300"
+                      errors.gender ? "border-red-500" : "border-gray-300"
                     }`}
                   >
                     <option value="">Select Gender</option>
@@ -317,9 +344,9 @@ const TeacherForm = ({
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                   </select>
-                  {errors.sex && (
+                  {errors.gender && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.sex.message}
+                      {errors.gender.message}
                     </p>
                   )}
                 </div>
@@ -339,15 +366,15 @@ const TeacherForm = ({
                   </label>
                   <div className="relative">
                     <select
-                      {...register("classes")}
+                      {...register("classId")}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none ${
-                        errors.classes ? "border-red-500" : "border-gray-300"
+                        errors.classId ? "border-red-500" : "border-gray-300"
                       }`}
                     >
                       <option value="">Select Class</option>
-                      {CLASS_OPTIONS.map((classItem) => (
-                        <option key={classItem.id} value={classItem.id}>
-                          {classItem.name}
+                      {classes.map((classItem) => (
+                        <option key={classItem._id} value={classItem._id}>
+                          {classItem.className}
                         </option>
                       ))}
                     </select>
@@ -367,9 +394,9 @@ const TeacherForm = ({
                       </svg>
                     </div>
                   </div>
-                  {errors.classes && (
+                  {errors.classId && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.classes.message}
+                      {errors.classId.message}
                     </p>
                   )}
                 </div>
@@ -379,14 +406,14 @@ const TeacherForm = ({
                   </label>
                   <div className="relative">
                     <select
-                      {...register("subjects")}
+                      {...register("subject")}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none ${
-                        errors.subjects ? "border-red-500" : "border-gray-300"
+                        errors.subject ? "border-red-500" : "border-gray-300"
                       }`}
                     >
                       <option value="">Select Subject</option>
-                      {SUBJECT_OPTIONS.map((subject) => (
-                        <option key={subject.id} value={subject.id}>
+                      {subjects.map((subject) => (
+                        <option key={subject._id} value={subject._id}>
                           {subject.name}
                         </option>
                       ))}
@@ -407,80 +434,42 @@ const TeacherForm = ({
                       </svg>
                     </div>
                   </div>
-                  {errors.subjects && (
+                  {errors.subject && (
                     <p className="text-sm text-red-500 transition-opacity duration-300">
-                      {errors.subjects.message}
+                      {errors.subject.message}
                     </p>
                   )}
                 </div>
               </div>
             </div>
+            {/* Footer with action buttons - sticky at bottom */}
+            <div className="p-6 border-t bg-white z-10">
+              <div className="flex justify-end gap-4 ">
+                <button
+                  type="button"
+                  onClick={() => reset()}
+                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-0.5"
+                >
+                  Reset
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
+                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {isSubmitting
+                    ? "Processing..."
+                    : type === "create"
+                    ? "Create Teacher"
+                    : "Update Teacher"}
+                </button>
+              </div>
+            </div>
           </form>
         </div>
-
-        {/* Footer with action buttons - sticky at bottom */}
-        <div className="p-6 border-t bg-white sticky bottom-0 z-10">
-          <div className="flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={() => reset()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-0.5"
-            >
-              Reset
-            </button>
-            <button
-              type="submit"
-              form="teacher-form"
-              disabled={isSubmitting}
-              className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
-                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {isSubmitting
-                ? "Processing..."
-                : type === "create"
-                ? "Create Teacher"
-                : "Update Teacher"}
-            </button>
-          </div>
-        </div>
       </div>
-
-      {/* Custom scrollbar styles */}
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #c5c7d0;
-          border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #9fa6b2;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .form-section {
-          animation: fadeIn 0.4s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

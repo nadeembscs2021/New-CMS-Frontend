@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { revalidateList } from "@/actions/revalidate";
 
 const schema = z.object({
-  subjectName: z.string().min(1, { message: "Subject name is required!" }),
-  className: z.string().min(1, { message: "Class is required!" }),
-  section: z.string().min(1, { message: "Section is required!" }),
-  teacherName: z.string().min(1, { message: "Teacher name is required!" }),
+  name: z.string().min(1, { message: "Subject name is required!" }),
+  classId: z.string().min(1, { message: "Class is required!" }),
 });
 
 type Inputs = z.infer<typeof schema>;
@@ -17,10 +17,13 @@ type Inputs = z.infer<typeof schema>;
 const SubjectsForm = ({
   type,
   data,
+  setOpen,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: any;
 }) => {
+  console.log("data", data);
   const {
     register,
     handleSubmit,
@@ -28,10 +31,8 @@ const SubjectsForm = ({
   } = useForm<Inputs>({
     resolver: zodResolver(schema),
     defaultValues: {
-      subjectName: data?.name || "",
-      className: data?.classId?.className || "",
-      section: data?.section || "",
-      teacherName: data?.teacherName || "",
+      name: data?.name || "",
+      classId: data?.classId?.className || "",
     },
   });
 
@@ -58,6 +59,8 @@ const SubjectsForm = ({
       );
     }
     const apiData = await apiResponse.json();
+    await revalidateList("/list/subjects");
+    setOpen(false);
     console.log(apiData);
   });
 
@@ -75,35 +78,24 @@ const SubjectsForm = ({
   return (
     <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        Create New Subject
+        {type === "create" ? "Create Subject" : "Update Subject"}
       </h1>
 
       <form className="space-y-6" onSubmit={onSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
           {/* Subject Name Dropdown */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Subject Name
             </label>
-            <select
-              {...register("subjectName")}
+            <input
+              type="text"
+              {...register("name")}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Subject</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Maths">Maths</option>
-              <option value="Physics">Physics</option>
-              <option value="Biology">Biology</option>
-              <option value="Chemistry">Chemistry</option>
-              <option value="English">English</option>
-              <option value="Urdu">Urdu</option>
-              <option value="PakStudy">PakStudy</option>
-              <option value="Islamiyat">Islamiyat</option>
-            </select>
-            {errors.subjectName && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.subjectName.message}
-              </p>
+              placeholder="Enter subject name"
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
 
@@ -113,56 +105,19 @@ const SubjectsForm = ({
               Class
             </label>
             <select
-              {...register("className")}
+              {...register("classId")}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Class</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
+              {classes.map((classItem: any) => (
+                <option key={classItem._id} value={classItem._id}>
+                  {classItem.className}
+                </option>
+              ))}
             </select>
-            {errors.className && (
+            {errors.classId && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.className.message}
-              </p>
-            )}
-          </div>
-
-          {/* Section Dropdown */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Section
-            </label>
-            <select
-              {...register("section")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Section</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
-            {errors.section && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.section.message}
-              </p>
-            )}
-          </div>
-
-          {/* Teacher Name Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Teacher Name
-            </label>
-            <input
-              type="text"
-              {...register("teacherName")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter teacher's name"
-            />
-            {errors.teacherName && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.teacherName.message}
+                {errors.classId.message}
               </p>
             )}
           </div>

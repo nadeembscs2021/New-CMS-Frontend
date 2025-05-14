@@ -8,7 +8,6 @@ const schema = z.object({
   className: z.string().min(1, { message: "Class name is required!" }),
   section: z.string().min(1, { message: "Section is required!" }),
   capacity: z.string().min(1, { message: "Capacity is required!" }),
-  teacherName: z.string().min(1, { message: "Teacher name is required!" }),
 });
 
 type Inputs = z.infer<typeof schema>;
@@ -16,9 +15,11 @@ type Inputs = z.infer<typeof schema>;
 const ClassForm = ({
   type,
   data,
+  setOpen,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: (open: boolean) => void;
 }) => {
   const {
     register,
@@ -30,7 +31,6 @@ const ClassForm = ({
       className: data?.className || "",
       section: data?.section || "",
       capacity: data?.capacity || "",
-      teacherName: data?.teacherName || "",
     },
   });
 
@@ -57,52 +57,47 @@ const ClassForm = ({
       );
     }
     const apiData = await apiResponse.json();
+    if (apiData.success) setOpen(false);
     console.log(apiData);
   });
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        Create New Class
+        {type === "create" ? "Create Class" : "Update Class"}
       </h1>
 
       <form className="space-y-6" onSubmit={onSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Class Name Dropdown */}
+        <div className="space-y-4">
+          {/* Class Name Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Class Name
             </label>
-            <select
+            <input
+              type="text"
               {...register("className")}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Class</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-            </select>
+              placeholder="Enter class name"
+            />
             {errors.className && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.className.message}
+                {errors.className?.message}
               </p>
             )}
           </div>
 
-          {/* Section Dropdown */}
+          {/* Section Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Section
             </label>
-            <select
+            <input
+              type="text"
               {...register("section")}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Section</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
+              placeholder="Enter section"
+            />
             {errors.section && (
               <p className="mt-1 text-sm text-red-600">
                 {errors.section.message}
@@ -124,24 +119,6 @@ const ClassForm = ({
             {errors.capacity && (
               <p className="mt-1 text-sm text-red-600">
                 {errors.capacity.message}
-              </p>
-            )}
-          </div>
-
-          {/* Teacher Name Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Teacher Name
-            </label>
-            <input
-              type="text"
-              {...register("teacherName")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter teacher's name"
-            />
-            {errors.teacherName && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.teacherName.message}
               </p>
             )}
           </div>

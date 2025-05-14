@@ -205,13 +205,13 @@ const Menu = () => {
 
       {/* Menu Panel */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-blue-950 to-blue-900 text-white z-40 transition-all duration-300 ease-in-out
+        className={`top-0 left-0 h-full bg-gradient-to-b from-blue-950 to-blue-900 text-white z-40 transition-all duration-300 ease-in-out
           ${
             isMobile
               ? isOpen
-                ? "w-60 shadow-xl"
+                ? "w-full shadow-xl"
                 : "-translate-x-full"
-              : "w-44"
+              : "w-full"
           }`}
       >
         <div className="flex flex-col h-full p-3">
@@ -254,7 +254,7 @@ const Menu = () => {
                         <li key={item.label}>
                           <Link
                             href={item.href}
-                            className={`flex items-center px-2 py-1.5 rounded text-xs transition-all
+                            className={`flex items-center px-2 py-1.5 rounded text-sm transition-all
                               ${
                                 activePath === item.href
                                   ? "bg-blue-800 text-white font-medium"

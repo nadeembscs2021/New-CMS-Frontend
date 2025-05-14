@@ -29,11 +29,11 @@ type ParentFormValues = z.infer<typeof schema>;
 const ParentsForm = ({
   type,
   data,
-  onClose,
+  setOpen,
 }: {
-  type: "create" | "update";
+  type: "create" | "update" | "delete";
   data?: any;
-  onClose?: () => void;
+  setOpen?: any;
 }) => {
   const {
     register,
@@ -56,9 +56,6 @@ const ParentsForm = ({
     try {
       console.log("Form submitted:", formData);
       // Add your form submission logic here
-      if (onClose) {
-        onClose();
-      }
     } catch (error) {
       console.error("Submission error:", error);
     }

@@ -21,15 +21,15 @@ const ClassForm = dynamic(() => import("./forms/ClassForm"), {
 const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-
-const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
-} = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
-  class: (type, data) => <ClassForm type={type} data={data} />,
-  subject: (type, data) => <SubjectForm type={type} data={data} />,
-};
+const ExamForm = dynamic(() => import("./forms/ExamForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const FormModal = ({
   table,
@@ -63,6 +63,32 @@ const FormModal = ({
       : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
+
+  const forms: {
+    [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
+  } = {
+    teacher: (type, data) => (
+      <TeacherForm type={type} data={data} setOpen={setOpen} />
+    ),
+    student: (type, data) => (
+      <StudentForm type={type} data={data} setOpen={setOpen} />
+    ),
+    class: (type, data) => (
+      <ClassForm type={type} data={data} setOpen={setOpen} />
+    ),
+    subject: (type, data) => (
+      <SubjectForm type={type} data={data} setOpen={setOpen} />
+    ),
+    exam: (type, data) => (
+      <ExamForm type={type} data={data} setOpen={setOpen} />
+    ),
+    result: (type, data) => (
+      <ResultForm type={type} data={data} setOpen={setOpen} />
+    ),
+    parent: (type, data) => (
+      <ParentForm type={type} data={data} setOpen={setOpen} />
+    ),
+  };
 
   const Form = () => {
     const handleDelete = async (e: React.FormEvent<HTMLFormElement>) => {

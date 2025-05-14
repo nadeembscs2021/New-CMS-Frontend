@@ -31,7 +31,6 @@ const schema = z.object({
 type StudentFormValues = z.infer<typeof schema>;
 
 const CLASS_OPTIONS = [
-
   { id: "1", name: "1st Year" },
   { id: "2", name: "2nd Year" },
 ];
@@ -46,9 +45,11 @@ const SECTION_OPTIONS = [
 const StudentForm = ({
   type,
   data,
+  setOpen,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: (open: boolean) => void;
 }) => {
   const {
     register,
@@ -68,7 +69,6 @@ const StudentForm = ({
   });
 
   const [imageUploading, setImageUploading] = useState(false);
-  const profileImage = watch("img");
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
@@ -94,44 +94,6 @@ const StudentForm = ({
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
           <form onSubmit={onSubmit} className="space-y-8">
-            {/* Profile Image Upload */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mb-4 group transition-all duration-300">
-                <Image
-                  src={profileImage || "/noAvatar.png"}
-                  alt="Profile"
-                  width={128}
-                  height={128}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-              <button
-                type="button"
-                onClick={() => document.getElementById("imageUpload")?.click()}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                disabled={imageUploading}
-              >
-                <span>{imageUploading ? "Uploading..." : "Upload Photo"}</span>
-              </button>
-              <input
-                id="imageUpload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setImageUploading(true);
-                    // Simulate upload
-                    setTimeout(() => {
-                      setValue("img", URL.createObjectURL(e.target.files![0]));
-                      setImageUploading(false);
-                    }, 1000);
-                  }
-                }}
-              />
-            </div>
-
             {/* Personal Information */}
             <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
