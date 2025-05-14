@@ -62,30 +62,28 @@ const ParentsForm = ({
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-4xl w-full h-[90vh] mx-auto flex flex-col bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300">
+    <div className="flex items-center justify-center bg-gray-50 p-4">
+      <div className="max-w-2xl w-full mx-auto flex flex-col bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b bg-white sticky top-0 z-10">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {type === "create" ? "Create New Parent" : "Update Parent Profile"}
-          </h1>
+        <div className="bg-purple-700 text-white text-lg font-semibold p-2 rounded-t-lg">
+          {type === "create" ? "Create New Parent" : "Update Parent Profile"}
         </div>
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        <div className="overflow-y-auto max-h-[70vh] p-4 custom-scrollbar">
           <form
             id="parentForm"
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-8"
+            className="space-y-6"
           >
             {/* Profile Image Upload */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden mb-4 group transition-all duration-300">
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative w-24 h-24 rounded-full border-2 border-gray-200 shadow-md overflow-hidden mb-3 group transition-all duration-300">
                 <Image
                   src={profileImage || "/noAvatar.png"}
                   alt="Profile"
-                  width={128}
-                  height={128}
+                  width={96}
+                  height={96}
                   className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -93,7 +91,7 @@ const ParentsForm = ({
               <button
                 type="button"
                 onClick={() => document.getElementById("imageUpload")?.click()}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-3 py-1.5 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition-all duration-300 shadow-md hover:shadow-lg"
                 disabled={imageUploading}
               >
                 <span>{imageUploading ? "Uploading..." : "Upload Photo"}</span>
@@ -117,51 +115,51 @@ const ParentsForm = ({
             </div>
 
             {/* Personal Information */}
-            <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
               <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
                 <span className="w-1 h-6 bg-teal-500 rounded-full mr-2"></span>
                 Personal Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     First Name
                   </label>
                   <input
                     {...register("firstName")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
                       errors.firstName ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.firstName && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.firstName.message}
                     </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Last Name
                   </label>
                   <input
                     {...register("lastName")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
                       errors.lastName ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.lastName && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.lastName.message}
                     </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Gender
                   </label>
                   <select
                     {...register("gender")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
                       errors.gender ? "border-red-500" : "border-gray-300"
                     }`}
                   >
@@ -171,23 +169,23 @@ const ParentsForm = ({
                     <option value="other">Other</option>
                   </select>
                   {errors.gender && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.gender.message}
                     </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Username
                   </label>
                   <input
                     {...register("username")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
                       errors.username ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.username && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.username.message}
                     </p>
                   )}
@@ -196,57 +194,57 @@ const ParentsForm = ({
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
               <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
                 <span className="w-1 h-6 bg-blue-500 rounded-full mr-2"></span>
                 Contact Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Email
                   </label>
                   <input
                     type="email"
                     {...register("email")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                       errors.email ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.email && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.email.message}
                     </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Phone
                   </label>
                   <input
                     {...register("phone")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                       errors.phone ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.phone && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.phone.message}
                     </p>
                   )}
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                <div className="col-span-2 space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
                     Address
                   </label>
                   <input
                     {...register("address")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                       errors.address ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.address && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.address.message}
                     </p>
                   )}
@@ -255,24 +253,24 @@ const ParentsForm = ({
             </div>
 
             {/* Student Information */}
-            <div className="space-y-6 bg-gray-50 p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
               <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
                 <span className="w-1 h-6 bg-indigo-500 rounded-full mr-2"></span>
                 Student Information
               </h2>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-600">
                     Student Name
                   </label>
                   <input
                     {...register("studentName")}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${
                       errors.studentName ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.studentName && (
-                    <p className="text-sm text-red-500 transition-opacity duration-300">
+                    <p className="text-sm text-red-500">
                       {errors.studentName.message}
                     </p>
                   )}
@@ -282,31 +280,29 @@ const ParentsForm = ({
           </form>
         </div>
 
-        {/* Footer with action buttons */}
-        <div className="p-6 border-t bg-white sticky bottom-0 z-10">
-          <div className="flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={() => reset()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-0.5"
-            >
-              Reset
-            </button>
-            <button
-              type="submit"
-              form="parentForm"
-              disabled={isSubmitting}
-              className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
-                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {isSubmitting
-                ? "Processing..."
-                : type === "create"
-                ? "Create Parent"
-                : "Update Parent"}
-            </button>
-          </div>
+        {/* Buttons */}
+        <div className="p-4 border-t bg-white flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+          >
+            Reset
+          </button>
+          <button
+            type="submit"
+            form="parentForm"
+            disabled={isSubmitting}
+            className={`px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {isSubmitting
+              ? "Processing..."
+              : type === "create"
+              ? "Create Parent"
+              : "Update Parent"}
+          </button>
         </div>
       </div>
 

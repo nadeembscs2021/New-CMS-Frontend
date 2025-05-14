@@ -79,159 +79,157 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-6 flex flex-col gap-6 bg-white rounded-md shadow-md max-w-lg mx-auto"
+      className="bg-white rounded-lg shadow-md p-4 max-w-md mx-auto"
     >
-      <h2 className="text-xl font-semibold text-gray-800">
-        {type === "create" ? "Create Exam" : "Update Exam"}
-      </h2>
-
-      {/* Title */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">Exam Title</label>
-        <input
-          type="text"
-          value={formData.title}
-          onChange={(e) =>
-            setFormData({ ...formData, title: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          placeholder="e.g., Math Midterm"
-        />
-        {errors.title && (
-          <span className="text-red-500 text-xs">{errors.title}</span>
-        )}
+      <div className="bg-purple-700 text-white text-lg font-semibold p-2 rounded-t-lg">
+        {type === "create" ? "Create New Exam" : "Update Exam"}
       </div>
 
-      {/* Class (Dropdown Placeholder) */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">Class</label>
-        <select
-          value={formData.class}
-          onChange={(e) =>
-            setFormData({ ...formData, class: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">Select Class</option>
-          {/* Replace with dynamic data from backend */}
-          <option value="class1">Class 1</option>
-          <option value="class2">Class 2</option>
-        </select>
-        {errors.class && (
-          <span className="text-red-500 text-xs">{errors.class}</span>
-        )}
-      </div>
+      {/* Form Fields in 2-column layout */}
+      <div className="grid grid-cols-2 gap-4 p-4">
+        {/* Row 1: Exam Title & Class */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">
+            Exam Title
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., Math Midterm"
+          />
+          {errors.title && (
+            <span className="text-red-500 text-xs">{errors.title}</span>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">Class</label>
+          <select
+            value={formData.class}
+            onChange={(e) =>
+              setFormData({ ...formData, class: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Class</option>
+            <option value="class1">Class 1</option>
+            <option value="class2">Class 2</option>
+          </select>
+          {errors.class && (
+            <span className="text-red-500 text-xs">{errors.class}</span>
+          )}
+        </div>
 
-      {/* Subject (Dropdown Placeholder) */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">Subject</label>
-        <select
-          value={formData.subject}
-          onChange={(e) =>
-            setFormData({ ...formData, subject: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">Select Subject</option>
-          {/* Replace with dynamic data from backend */}
-          <option value="subject1">Math</option>
-          <option value="subject2">Science</option>
-        </select>
-        {errors.subject && (
-          <span className="text-red-500 text-xs">{errors.subject}</span>
-        )}
-      </div>
+        {/* Row 2: Subject & Teacher */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">Subject</label>
+          <select
+            value={formData.subject}
+            onChange={(e) =>
+              setFormData({ ...formData, subject: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Subject</option>
+            <option value="subject1">Math</option>
+            <option value="subject2">Science</option>
+          </select>
+          {errors.subject && (
+            <span className="text-red-500 text-xs">{errors.subject}</span>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">Teacher</label>
+          <select
+            value={formData.teacher}
+            onChange={(e) =>
+              setFormData({ ...formData, teacher: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Teacher</option>
+            <option value="teacher1">Teacher 1</option>
+            <option value="teacher2">Teacher 2</option>
+          </select>
+          {errors.teacher && (
+            <span className="text-red-500 text-xs">{errors.teacher}</span>
+          )}
+        </div>
 
-      {/* Teacher (Dropdown Placeholder) */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">Teacher</label>
-        <select
-          value={formData.teacher}
-          onChange={(e) =>
-            setFormData({ ...formData, teacher: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">Select Teacher</option>
-          {/* Replace with dynamic data from backend */}
-          <option value="teacher1">Teacher 1</option>
-          <option value="teacher2">Teacher 2</option>
-        </select>
-        {errors.teacher && (
-          <span className="text-red-500 text-xs">{errors.teacher}</span>
-        )}
-      </div>
+        {/* Row 3: Start Date & End Date */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">
+            Start Date
+          </label>
+          <input
+            type="date"
+            value={formData.startDate}
+            onChange={(e) =>
+              setFormData({ ...formData, startDate: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.startDate && (
+            <span className="text-red-500 text-xs">{errors.startDate}</span>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">End Date</label>
+          <input
+            type="date"
+            value={formData.endDate}
+            onChange={(e) =>
+              setFormData({ ...formData, endDate: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.endDate && (
+            <span className="text-red-500 text-xs">{errors.endDate}</span>
+          )}
+        </div>
 
-      {/* Start Date */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">Start Date</label>
-        <input
-          type="date"
-          value={formData.startDate}
-          onChange={(e) =>
-            setFormData({ ...formData, startDate: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-        {errors.startDate && (
-          <span className="text-red-500 text-xs">{errors.startDate}</span>
-        )}
-      </div>
-
-      {/* End Date */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">End Date</label>
-        <input
-          type="date"
-          value={formData.endDate}
-          onChange={(e) =>
-            setFormData({ ...formData, endDate: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-        {errors.endDate && (
-          <span className="text-red-500 text-xs">{errors.endDate}</span>
-        )}
-      </div>
-
-      {/* Duration */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">
-          Duration (minutes)
-        </label>
-        <input
-          type="number"
-          value={formData.duration}
-          onChange={(e) =>
-            setFormData({ ...formData, duration: e.target.value })
-          }
-          className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          placeholder="e.g., 120"
-        />
-        {errors.duration && (
-          <span className="text-red-500 text-xs">{errors.duration}</span>
-        )}
+        {/* Row 4: Duration */}
+        <div className="col-span-2 flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-600">
+            Duration (minutes)
+          </label>
+          <input
+            type="number"
+            value={formData.duration}
+            onChange={(e) =>
+              setFormData({ ...formData, duration: e.target.value })
+            }
+            className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            placeholder="e.g., 120"
+          />
+          {errors.duration && (
+            <span className="text-red-500 text-xs">{errors.duration}</span>
+          )}
+        </div>
       </div>
 
       {/* Submit Error */}
       {errors.submit && (
-        <span className="text-red-500 text-sm text-center">
+        <span className="text-red-500 text-sm text-center block mt-2">
           {errors.submit}
         </span>
       )}
 
       {/* Buttons */}
-      <div className="flex gap-4 justify-end">
+      <div className="flex justify-end gap-4 p-4 border-t border-gray-200">
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition"
+          className="bg-gray-200 text-gray-700 py-1.5 px-4 rounded-md hover:bg-gray-300 transition"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+          className="bg-purple-700 text-white py-1.5 px-4 rounded-md hover:bg-purple-800 transition"
         >
           {type === "create" ? "Create Exam" : "Update Exam"}
         </button>
