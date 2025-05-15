@@ -1,4 +1,4 @@
-# Lama Dev School Management Dashboard
+# MERN Stack College Management Dashboard
 
 ## Getting Started
 
