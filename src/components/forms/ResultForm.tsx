@@ -108,8 +108,7 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Student</option>
-            <option value="student1">Student 1</option>
-            <option value="student2">Student 2</option>
+            <option value="student1">Student Name</option>
           </select>
           {errors.studentId && (
             <span className="text-red-500 text-xs">{errors.studentId}</span>
@@ -127,8 +126,8 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Class</option>
-            <option value="class1">Class 1</option>
-            <option value="class2">Class 2</option>
+            <option value="class1">1st Year</option>
+            <option value="class2">2nd Year</option>
           </select>
           {errors.classId && (
             <span className="text-red-500 text-xs">{errors.classId}</span>
@@ -144,8 +143,15 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Subject</option>
-            <option value="subject1">Math</option>
-            <option value="subject2">Science</option>
+            <option value="subject1">Computer Science</option>
+            <option value="subject1">Maths</option>
+            <option value="subject1">Physics</option>
+            <option value="subject2">Biology</option>
+            <option value="subject1">Chemistry</option>
+            <option value="subject1">English</option>
+            <option value="subject1">Urdu</option>
+            <option value="subject1">PakStudy</option>
+            <option value="subject1">Islamiyat</option>
           </select>
           {errors.subject && (
             <span className="text-red-500 text-xs">{errors.subject}</span>
@@ -178,8 +184,7 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Teacher</option>
-            <option value="teacher1">Teacher 1</option>
-            <option value="teacher2">Teacher 2</option>
+            <option value="teacher1">Teacher Name</option>
           </select>
           {errors.teacher && (
             <span className="text-red-500 text-xs">{errors.teacher}</span>

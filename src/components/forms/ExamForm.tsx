@@ -115,8 +115,8 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Class</option>
-            <option value="class1">Class 1</option>
-            <option value="class2">Class 2</option>
+            <option value="class1">1st Year</option>
+            <option value="class2">2nd Year</option>
           </select>
           {errors.class && (
             <span className="text-red-500 text-xs">{errors.class}</span>
@@ -134,15 +134,22 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Subject</option>
-            <option value="subject1">Math</option>
-            <option value="subject2">Science</option>
+            <option value="subject1">Computer Science</option>
+            <option value="subject1">Maths</option>
+            <option value="subject1">Physics</option>
+            <option value="subject2">Biology</option>
+            <option value="subject1">Chemistry</option>
+            <option value="subject1">English</option>
+            <option value="subject1">Urdu</option>
+            <option value="subject1">PakStudy</option>
+            <option value="subject1">Islamiyat</option>
           </select>
           {errors.subject && (
             <span className="text-red-500 text-xs">{errors.subject}</span>
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-600">Teacher</label>
+          <label className="text-sm font-medium text-gray-600">Teacher Name</label>
           <select
             value={formData.teacher}
             onChange={(e) =>
@@ -151,8 +158,7 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Teacher</option>
-            <option value="teacher1">Teacher 1</option>
-            <option value="teacher2">Teacher 2</option>
+            <option value="teacher1">Teacher Name</option>
           </select>
           {errors.teacher && (
             <span className="text-red-500 text-xs">{errors.teacher}</span>
