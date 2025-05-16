@@ -143,6 +143,7 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             <option value="subject1">Urdu</option>
             <option value="subject1">PakStudy</option>
             <option value="subject1">Islamiyat</option>
+            <option value="subject1">History</option>
           </select>
           {errors.subject && (
             <span className="text-red-500 text-xs">{errors.subject}</span>
