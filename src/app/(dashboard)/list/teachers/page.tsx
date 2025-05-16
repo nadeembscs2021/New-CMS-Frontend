@@ -88,7 +88,7 @@ const TeacherListPage = () => {
           <p className="text-xs text-gray-500">{item?.email}</p>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.subject.name}</td>
+      <td className="hidden md:table-cell">{item.subject?.name}</td>
       <td className="hidden md:table-cell">{item.classId.className}</td>
       <td className="hidden md:table-cell">{item.classId.section}</td>
       <td className="hidden md:table-cell">{item.phone}</td>

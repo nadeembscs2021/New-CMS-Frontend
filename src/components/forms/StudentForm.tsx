@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   username: z
@@ -76,7 +77,13 @@ const StudentForm = ({
         );
       }
       const apiData = await apiResponse.json();
-      if (apiData.success) setOpen(false);
+      if (apiData.success) {
+       setOpen(false);
+        toast.success(apiData.message);
+      } else {
+        setOpen(false);
+        toast.error(apiData.message);
+      }
       console.log(apiData);
     } catch (error) {
       console.error("Submission error:", error);

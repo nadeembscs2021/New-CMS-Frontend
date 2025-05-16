@@ -89,15 +89,15 @@ const menuItems = [
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
-        icon: <FiCheckSquare size={12} />,
-        label: "Assignments",
-        href: "/list/assignments",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
         icon: <FiClipboard size={12} />,
         label: "Results",
         href: "/list/results",
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: <FiCheckSquare size={12} />,
+        label: "Assignments",
+        href: "/list/assignments",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],

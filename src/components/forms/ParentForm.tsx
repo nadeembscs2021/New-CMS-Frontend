@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   username: z
@@ -12,7 +13,6 @@ const schema = z.object({
     .max(20, "Username must be at most 20 characters"),
   email: z.string().email("Invalid email address"),
   fatherName: z.string().min(1, "Father name is required"),
-  motherName: z.string().min(1, "Mother name is required"),
   phone: z.string().min(1, "Phone is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   address: z.string().min(1, "Address is required"),
@@ -70,8 +70,13 @@ const ParentForm = ({
         );
       }
       const apiData = await apiResponse.json();
-      if (apiData.success) setOpen(false);
-      console.log(apiData);
+      if (apiData.success) {
+        setOpen(false);
+        toast.success(apiData.message);
+      } else {
+        setOpen(false);
+        toast.error(apiData.message);
+      }
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -127,36 +132,20 @@ const ParentForm = ({
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-600">
-                      Mother Name
+                      Address
                     </label>
                     <input
-                      {...register("motherName")}
+                      {...register("address")}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
-                        errors.motherName ? "border-red-500" : "border-gray-300"
+                        errors.address ? "border-red-500" : "border-gray-300"
                       }`}
                     />
-                    {errors.motherName && (
+                    {errors.address && (
                       <p className="text-sm text-red-500">
-                        {errors.motherName.message}
+                        {errors.address.message}
                       </p>
                     )}
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    Address
-                  </label>
-                  <input
-                    {...register("address")}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
-                      errors.address ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.address && (
-                    <p className="text-sm text-red-500">
-                      {errors.address.message}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
@@ -292,8 +281,8 @@ const ParentForm = ({
             {isSubmitting
               ? "Processing..."
               : type === "create"
-              ? "Create Student"
-              : "Update Student"}
+              ? "Create Parent"
+              : "Update Parent"}
           </button>
         </div>
       </div>

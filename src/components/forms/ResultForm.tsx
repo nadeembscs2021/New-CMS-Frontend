@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ResultFormProps {
   type: "create" | "update";
@@ -87,6 +88,14 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
       });
 
       if (!response.ok) throw new Error("Failed to submit result");
+      const result = await response.json();
+      if (result.success) {
+        setOpen(false);
+        toast.success(result.message);
+      } else {
+        setOpen(false);
+        toast.error(result.message);
+      }
       setOpen(false);
     } catch (error) {
       console.error("Error submitting result:", error);

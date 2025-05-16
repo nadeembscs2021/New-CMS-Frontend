@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ExamFormProps {
   type: "create" | "update";
@@ -83,7 +84,14 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
         }),
       });
       const responseData = await apiResponse.json();
-      setOpen(false);
+      if (responseData.success) {
+        setOpen(false);
+        toast.success(responseData.message);
+      } else {
+        setOpen(false);
+        toast.error(responseData.message);
+      }
+      // setOpen(false);
     } catch (error) {
       console.error("Error submitting exam:", error);
       setErrors({ submit: "Failed to submit exam. Please try again." });

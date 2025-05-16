@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import "./teacherForm.module.css";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   username: z
@@ -59,6 +60,7 @@ const TeacherForm = ({
     {
       _id: "",
       className: "",
+      section: "",
     },
   ]);
   const [subjects, setSubjects] = useState([
@@ -116,8 +118,12 @@ const TeacherForm = ({
       }
       const response = await apiResponse?.json();
       if (response.success) {
-        setOpen(false);
-      }
+             setOpen(false);
+              toast.success(response.message);
+            } else {
+              setOpen(false);
+              toast.error(response.message);
+            }
       console.log(response);
     } catch (error) {
       console.error("Submission error:", error);
@@ -327,7 +333,7 @@ const TeacherForm = ({
                     <option value="">Select Class</option>
                     {classes.map((classItem) => (
                       <option key={classItem._id} value={classItem._id}>
-                        {classItem.className}
+                        {classItem.className} - {classItem.section}
                       </option>
                     ))}
                   </select>

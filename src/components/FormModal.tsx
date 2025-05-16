@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 // USE LAZY LOADING
 
@@ -100,8 +101,14 @@ const FormModal = ({
         }
       );
       const data = await apiResponse.json();
+      if (data.success) {
+       setOpen(false);
+        toast.success(data.message);
+      } else {
+        setOpen(false);
+        toast.error(data.message);
+      }
       console.log(data);
-      setOpen(false);
     };
 
     return type === "delete" && id ? (

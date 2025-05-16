@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 type Parent = {
   _id: string;
   fatherName: string;
-  motherName: string;
   email?: string;
   studentId: {
     _id: string;
@@ -24,10 +23,6 @@ const columns = [
   {
     header: "Father Name",
     accessor: "fatherName",
-  },
-  {
-    header: "Mother Name",
-    accessor: "motherName",
   },
   {
     header: "Student Names",
@@ -73,7 +68,6 @@ const ParentListPage = () => {
           <h3 className="font-medium"> {item.fatherName}</h3>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.motherName}</td>
       <td className="hidden md:table-cell">{item.studentId?.name}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>

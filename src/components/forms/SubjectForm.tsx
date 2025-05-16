@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { revalidateList } from "@/actions/revalidate";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Subject name is required!" }),
@@ -59,7 +60,14 @@ const SubjectsForm = ({
       );
     }
     const apiData = await apiResponse.json();
-    await revalidateList("/list/subjects");
+    if (apiData.success) {
+      setOpen(false);
+      toast.success(apiData.message);
+    } else {
+      setOpen(false);
+      toast.error(apiData.message);
+    }
+    // await revalidateList("/list/subjects");
     setOpen(false);
     console.log(apiData);
   });
@@ -115,7 +123,7 @@ const SubjectsForm = ({
                     <option value="">Select Class</option>
                     {classes.map((classItem: any) => (
                       <option key={classItem._id} value={classItem._id}>
-                        {classItem.className}
+                        {classItem.className} - {classItem.section}
                       </option>
                     ))}
                   </select>

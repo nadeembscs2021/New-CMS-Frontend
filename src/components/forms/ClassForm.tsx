@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 const schema = z.object({
@@ -58,7 +59,13 @@ const ClassForm = ({
       );
     }
     const apiData = await apiResponse.json();
-    if (apiData.success) setOpen(false);
+    if (apiData.success) {
+           setOpen(false);
+            toast.success(apiData.message);
+          } else {
+            setOpen(false);
+            toast.error(apiData.message);
+          }
     console.log(apiData);
   });
 
