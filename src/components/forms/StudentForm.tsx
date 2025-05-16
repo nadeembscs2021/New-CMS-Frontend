@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schema = z.object({
   username: z
@@ -11,17 +11,14 @@ const schema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username must be at most 20 characters"),
   email: z.string().email("Invalid email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  name: z.string().min(1, "Name is required"),
   phone: z.string().min(1, "Phone is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   address: z.string().min(1, "Address is required"),
   bloodType: z.string().min(1, "Blood type is required"),
-  birthday: z.string().min(1, "Birthday is required"),
-  parentName: z.string().min(1, "Parent name is required"),
-  parentPhone: z.string().min(1, "Parent phone is required"),
-  class: z.string().min(1, "Class is required"),
-  section: z.string().min(1, "Section is required"),
+  birthDate: z.string().min(1, "Birthday is required"),
+  classId: z.string().min(1, "Class is required"),
+  subject: z.string().min(1, "Section is required"),
   gender: z.enum(["male", "female", "other"], {
     required_error: "Gender is required",
     invalid_type_error: "Select a valid gender",
@@ -29,18 +26,6 @@ const schema = z.object({
 });
 
 type StudentFormValues = z.infer<typeof schema>;
-
-const CLASS_OPTIONS = [
-  { id: "1", name: "1st Year" },
-  { id: "2", name: "2nd Year" },
-];
-
-const SECTION_OPTIONS = [
-  { id: "a", name: "Section A" },
-  { id: "b", name: "Section B" },
-  { id: "c", name: "Section C" },
-  { id: "d", name: "Section D" },
-];
 
 const StudentForm = ({
   type,
@@ -67,16 +52,68 @@ const StudentForm = ({
     },
   });
 
-  const [imageUploading, setImageUploading] = useState(false);
-
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      console.log("Form submitted:", formData);
-      // Add your form submission logic here
+      let apiResponse;
+      if (type === "create") {
+        apiResponse = await fetch("http://localhost:4000/api/v1/student", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      } else {
+        apiResponse = await fetch(
+          `http://localhost:4000/api/v1/student/${data._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+      }
+      const apiData = await apiResponse.json();
+      if (apiData.success) setOpen(false);
+      console.log(apiData);
     } catch (error) {
       console.error("Submission error:", error);
     }
   });
+
+  const [classes, setClasses] = useState<
+    {
+      _id: string;
+      className: string;
+      section: string;
+    }[]
+  >([]);
+
+  const [subjects, setSubjects] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/class");
+      const data = await apiResponse.json();
+      setClasses(data.data);
+    };
+
+    const fetchSubjects = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/subject");
+      const data = await apiResponse.json();
+      setSubjects(data.data);
+    };
+
+    fetchClasses();
+    fetchSubjects();
+  }, []);
 
   return (
     <div className="flex items-center justify-center bg-gray-50 p-4">
@@ -95,39 +132,24 @@ const StudentForm = ({
                 <span className="w-1 h-6 bg-teal-500 rounded-full mr-2"></span>
                 Personal Information
               </h2>
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-1 gap-4 mt-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-600">
-                    First Name
+                    Full Name
                   </label>
                   <input
-                    {...register("firstName")}
+                    {...register("name")}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
-                      errors.firstName ? "border-red-500" : "border-gray-300"
+                      errors.name ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.firstName && (
+                  {errors.name && (
                     <p className="text-sm text-red-500">
-                      {errors.firstName.message}
+                      {errors.name.message}
                     </p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    Last Name
-                  </label>
-                  <input
-                    {...register("lastName")}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
-                      errors.lastName ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-500">
-                      {errors.lastName.message}
-                    </p>
-                  )}
-                </div>
+
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-600">
                     Gender
@@ -155,14 +177,14 @@ const StudentForm = ({
                   </label>
                   <input
                     type="date"
-                    {...register("birthday")}
+                    {...register("birthDate")}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
-                      errors.birthday ? "border-red-500" : "border-gray-300"
+                      errors.birthDate ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  {errors.birthday && (
+                  {errors.birthDate && (
                     <p className="text-sm text-red-500">
-                      {errors.birthday.message}
+                      {errors.birthDate.message}
                     </p>
                   )}
                 </div>
@@ -170,22 +192,12 @@ const StudentForm = ({
                   <label className="block text-sm font-medium text-gray-600">
                     Blood Type
                   </label>
-                  <select
+                  <input
                     {...register("bloodType")}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all ${
                       errors.bloodType ? "border-red-500" : "border-gray-300"
                     }`}
-                  >
-                    <option value="">Select Blood Type</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                  </select>
+                  />
                   {errors.bloodType && (
                     <p className="text-sm text-red-500">
                       {errors.bloodType.message}
@@ -299,86 +311,44 @@ const StudentForm = ({
                     Class
                   </label>
                   <select
-                    {...register("class")}
+                    {...register("classId")}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${
-                      errors.class ? "border-red-500" : "border-gray-300"
+                      errors.classId ? "border-red-500" : "border-gray-300"
                     }`}
                   >
                     <option value="">Select Class</option>
-                    {CLASS_OPTIONS.map((classItem) => (
-                      <option key={classItem.id} value={classItem.id}>
-                        {classItem.name}
+                    {classes.map((classItem) => (
+                      <option key={classItem._id} value={classItem._id}>
+                        {classItem.className} - {classItem.section}
                       </option>
                     ))}
                   </select>
-                  {errors.class && (
+                  {errors.classId && (
                     <p className="text-sm text-red-500">
-                      {errors.class.message}
+                      {errors.classId.message}
                     </p>
                   )}
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-600">
-                    Section
+                    Subject
                   </label>
                   <select
-                    {...register("section")}
+                    {...register("subject")}
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${
-                      errors.section ? "border-red-500" : "border-gray-300"
+                      errors.subject ? "border-red-500" : "border-gray-300"
                     }`}
                   >
-                    <option value="">Select Section</option>
-                    {SECTION_OPTIONS.map((section) => (
-                      <option key={section.id} value={section.id}>
-                        {section.name}
+                    <option value="">Select Subject</option>
+                    {subjects.map((subject) => (
+                      <option key={subject._id} value={subject._id}>
+                        {subject.name}
                       </option>
                     ))}
                   </select>
-                  {errors.section && (
+                  {errors.subject && (
                     <p className="text-sm text-red-500">
-                      {errors.section.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Guardian Information */}
-            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-700 border-b pb-2 flex items-center">
-                <span className="w-1 h-6 bg-purple-500 rounded-full mr-2"></span>
-                Guardian Information
-              </h2>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    Parent/Guardian Name
-                  </label>
-                  <input
-                    {...register("parentName")}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
-                      errors.parentName ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.parentName && (
-                    <p className="text-sm text-red-500">
-                      {errors.parentName.message}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    Phone Number
-                  </label>
-                  <input
-                    {...register("parentPhone")}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
-                      errors.parentPhone ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {errors.parentPhone && (
-                    <p className="text-sm text-red-500">
-                      {errors.parentPhone.message}
+                      {errors.subject.message}
                     </p>
                   )}
                 </div>

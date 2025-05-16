@@ -1,23 +1,33 @@
+"use client";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { parentsData, role } from "@/lib/data";
+import { role } from "@/lib/data";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type Parent = {
-  id: number;
-  name: string;
+  _id: string;
+  fatherName: string;
+  motherName: string;
   email?: string;
-  students: string[];
+  studentId: {
+    _id: string;
+    name: string;
+  };
   phone: string;
   address: string;
 };
 
 const columns = [
   {
-    header: "Info",
-    accessor: "info",
+    header: "Father Name",
+    accessor: "fatherName",
+  },
+  {
+    header: "Mother Name",
+    accessor: "motherName",
   },
   {
     header: "Student Names",
@@ -41,18 +51,30 @@ const columns = [
 ];
 
 const ParentListPage = () => {
+  const [parents, setParents] = useState<Parent[]>([]);
+
+  useEffect(() => {
+    const fetchParents = async () => {
+      const response = await fetch("http://localhost:4000/api/v1/parent");
+      const data = await response.json();
+      setParents(data.data);
+      console.log(data);
+    };
+    fetchParents();
+  }, []);
+
   const renderRow = (item: Parent) => (
     <tr
-      key={item.id}
+      key={item._id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item?.email}</p>
+          <h3 className="font-medium"> {item.fatherName}</h3>
         </div>
       </td>
-      <td className="hidden md:table-cell">{item.students.join(",")}</td>
+      <td className="hidden md:table-cell">{item.motherName}</td>
+      <td className="hidden md:table-cell">{item.studentId?.name}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
@@ -60,7 +82,7 @@ const ParentListPage = () => {
           {role === "admin" && (
             <>
               <FormModal table="parent" type="update" data={item} />
-              <FormModal table="parent" type="delete" id={item.id.toString()} />
+              <FormModal table="parent" type="delete" id={item._id} />
             </>
           )}
         </div>
@@ -87,7 +109,7 @@ const ParentListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={parentsData} />
+      <Table columns={columns} renderRow={renderRow} data={parents} />
       {/* PAGINATION */}
       <Pagination />
     </div>

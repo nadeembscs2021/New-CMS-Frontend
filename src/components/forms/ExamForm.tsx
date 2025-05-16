@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ExamFormProps {
   type: "create" | "update";
@@ -12,23 +12,39 @@ interface ExamFormProps {
     teacher: string;
     startDate: string;
     endDate: string;
-    duration: number;
+    duration: number | string;
   };
   setOpen: (open: boolean) => void;
 }
 
 const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
+  const [classes, setClasses] = useState<
+    {
+      _id: string;
+      className: string;
+      section: string;
+    }[]
+  >([]);
+  const [subjects, setSubjects] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+  const [teachers, setTeachers] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+
   const [formData, setFormData] = useState({
     title: data?.title || "",
-    class: data?.class || "",
+    classId: data?.class || "",
     subject: data?.subject || "",
     teacher: data?.teacher || "",
-    startDate: data?.startDate
-      ? new Date(data.startDate).toISOString().split("T")[0]
-      : "",
-    endDate: data?.endDate
-      ? new Date(data.endDate).toISOString().split("T")[0]
-      : "",
+    startDate: data?.startDate,
+    endDate: data?.endDate,
     duration: data?.duration || "",
   });
 
@@ -37,13 +53,12 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title) newErrors.title = "Title is required";
-    if (!formData.class) newErrors.class = "Class is required";
+    if (!formData.classId) newErrors.class = "Class is required";
     if (!formData.subject) newErrors.subject = "Subject is required";
     if (!formData.teacher) newErrors.teacher = "Teacher is required";
     if (!formData.startDate) newErrors.startDate = "Start date is required";
     if (!formData.endDate) newErrors.endDate = "End date is required";
-    if (!formData.duration || formData.duration <= 0)
-      newErrors.duration = "Valid duration is required";
+    if (!formData.duration) newErrors.duration = "Valid duration is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,11 +70,11 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
     try {
       const url =
         type === "create"
-          ? "http://localhost:4000/api/v1/exams"
-          : `http://localhost:4000/api/v1/exams/${data?._id}`;
+          ? "http://localhost:4000/api/v1/exam"
+          : `http://localhost:4000/api/v1/exam/${data?._id}`;
       const method = type === "create" ? "POST" : "PUT";
 
-      const response = await fetch(url, {
+      const apiResponse = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,14 +82,37 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
           duration: Number(formData.duration),
         }),
       });
-
-      if (!response.ok) throw new Error("Failed to submit exam");
+      const responseData = await apiResponse.json();
       setOpen(false);
     } catch (error) {
       console.error("Error submitting exam:", error);
       setErrors({ submit: "Failed to submit exam. Please try again." });
     }
   };
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/class");
+      const data = await apiResponse.json();
+      setClasses(data.data);
+    };
+
+    const fetchSubjects = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/subject");
+      const data = await apiResponse.json();
+      setSubjects(data.data);
+    };
+
+    const fetchTeachers = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/teacher");
+      const data = await apiResponse.json();
+      setTeachers(data.data);
+    };
+
+    fetchSubjects();
+    fetchTeachers();
+    fetchClasses();
+  }, []);
 
   return (
     <form
@@ -108,15 +146,18 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-600">Class</label>
           <select
-            value={formData.class}
+            value={formData.classId}
             onChange={(e) =>
-              setFormData({ ...formData, class: e.target.value })
+              setFormData({ ...formData, classId: e.target.value })
             }
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Class</option>
-            <option value="class1">1st Year</option>
-            <option value="class2">2nd Year</option>
+            {classes.map((cls) => (
+              <option key={cls._id} value={cls._id}>
+                {cls.className} - {cls.section}
+              </option>
+            ))}
           </select>
           {errors.class && (
             <span className="text-red-500 text-xs">{errors.class}</span>
@@ -134,23 +175,20 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Subject</option>
-            <option value="subject1">Computer Science</option>
-            <option value="subject1">Maths</option>
-            <option value="subject1">Physics</option>
-            <option value="subject2">Biology</option>
-            <option value="subject1">Chemistry</option>
-            <option value="subject1">English</option>
-            <option value="subject1">Urdu</option>
-            <option value="subject1">PakStudy</option>
-            <option value="subject1">Islamiyat</option>
-            <option value="subject1">History</option>
+            {subjects.map((sub) => (
+              <option key={sub._id} value={sub._id}>
+                {sub.name}
+              </option>
+            ))}
           </select>
           {errors.subject && (
             <span className="text-red-500 text-xs">{errors.subject}</span>
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-600">Teacher Name</label>
+          <label className="text-sm font-medium text-gray-600">
+            Teacher Name
+          </label>
           <select
             value={formData.teacher}
             onChange={(e) =>
@@ -159,7 +197,11 @@ const ExamForm = ({ type, data, setOpen }: ExamFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Teacher</option>
-            <option value="teacher1">Teacher Name</option>
+            {teachers.map((teacher) => (
+              <option key={teacher._id} value={teacher._id}>
+                {teacher.name}
+              </option>
+            ))}
           </select>
           {errors.teacher && (
             <span className="text-red-500 text-xs">{errors.teacher}</span>

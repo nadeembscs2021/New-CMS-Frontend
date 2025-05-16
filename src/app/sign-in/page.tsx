@@ -12,11 +12,11 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRoleChange = (e) => {
+  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setUserRole(e.target.value);
   };
 
-  const handleSignIn = async (e) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -93,9 +93,11 @@ const LoginPage = () => {
             {/* Logo in circular frame with animation */}
             <div className="mb-8 flex justify-center">
               <div className="relative w-20 h-20 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 flex items-center justify-center shadow-md overflow-hidden animate-pulse-slow">
-                <img
-                  src="CMS_logo.png"
+                <Image
+                  src="/CMS_logo.png"
                   alt="College Management System Logo"
+                  width={100}
+                  height={100}
                   className="w-14 h-14 object-contain animate-zoomIn"
                   onError={(e) => {
                     e.currentTarget.src =
@@ -206,7 +208,7 @@ const LoginPage = () => {
 
               {/* Sign up link */}
               <div className="text-center mt-6 text-gray-600">
-                Don't have an account?
+                {"Don't have an account? "}
                 <a
                   href="/sign-up"
                   className="text-blue-600 hover:text-blue-800 ml-1 font-medium transition-colors duration-300"

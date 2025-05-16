@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ResultFormProps {
   type: "create" | "update";
@@ -17,12 +17,37 @@ interface ResultFormProps {
 }
 
 const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
+  const [students, setStudents] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+  const [classes, setClasses] = useState<
+    {
+      _id: string;
+      className: string;
+    }[]
+  >([]);
+  const [subjects, setSubjects] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+  const [teachers, setTeachers] = useState<
+    {
+      _id: string;
+      name: string;
+    }[]
+  >([]);
+
   const [formData, setFormData] = useState({
     title: data?.title || "",
     studentId: data?.studentId || "",
     classId: data?.classId || "",
     subject: data?.subject || "",
-    marks: data?.marks || "",
+    marks: data?.marks || 0,
     teacher: data?.teacher || "",
   });
 
@@ -48,8 +73,8 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
     try {
       const url =
         type === "create"
-          ? "http://localhost:4000/api/v1/results"
-          : `http://localhost:4000/api/v1/results/${data?._id}`;
+          ? "http://localhost:4000/api/v1/result"
+          : `http://localhost:4000/api/v1/result/${data?._id}`;
       const method = type === "create" ? "POST" : "PUT";
 
       const response = await fetch(url, {
@@ -68,6 +93,37 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
       setErrors({ submit: "Failed to submit result. Please try again." });
     }
   };
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/student");
+      const data = await apiResponse.json();
+      setStudents(data.data);
+    };
+
+    const fetchClasses = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/class");
+      const data = await apiResponse.json();
+      setClasses(data.data);
+    };
+
+    const fetchSubjects = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/subject");
+      const data = await apiResponse.json();
+      setSubjects(data.data);
+    };
+
+    const fetchTeachers = async () => {
+      const apiResponse = await fetch("http://localhost:4000/api/v1/teacher");
+      const data = await apiResponse.json();
+      setTeachers(data.data);
+    };
+
+    fetchStudents();
+    fetchSubjects();
+    fetchTeachers();
+    fetchClasses();
+  }, []);
 
   return (
     <form
@@ -108,7 +164,11 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Student</option>
-            <option value="student1">Student Name</option>
+            {students.map((student) => (
+              <option key={student._id} value={student._id}>
+                {student.name}
+              </option>
+            ))}
           </select>
           {errors.studentId && (
             <span className="text-red-500 text-xs">{errors.studentId}</span>
@@ -126,8 +186,11 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Class</option>
-            <option value="class1">1st Year</option>
-            <option value="class2">2nd Year</option>
+            {classes.map((cls) => (
+              <option key={cls._id} value={cls._id}>
+                {cls.className}
+              </option>
+            ))}
           </select>
           {errors.classId && (
             <span className="text-red-500 text-xs">{errors.classId}</span>
@@ -143,15 +206,11 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Subject</option>
-            <option value="subject1">Computer Science</option>
-            <option value="subject1">Maths</option>
-            <option value="subject1">Physics</option>
-            <option value="subject2">Biology</option>
-            <option value="subject1">Chemistry</option>
-            <option value="subject1">English</option>
-            <option value="subject1">Urdu</option>
-            <option value="subject1">PakStudy</option>
-            <option value="subject1">Islamiyat</option>
+            {subjects.map((subject) => (
+              <option key={subject._id} value={subject._id}>
+                {subject.name}
+              </option>
+            ))}
           </select>
           {errors.subject && (
             <span className="text-red-500 text-xs">{errors.subject}</span>
@@ -165,7 +224,7 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             type="number"
             value={formData.marks}
             onChange={(e) =>
-              setFormData({ ...formData, marks: e.target.value })
+              setFormData({ ...formData, marks: Number(e.target.value) })
             }
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., 85"
@@ -184,7 +243,11 @@ const ResultForm = ({ type, data, setOpen }: ResultFormProps) => {
             className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Teacher</option>
-            <option value="teacher1">Teacher Name</option>
+            {teachers.map((teacher) => (
+              <option key={teacher._id} value={teacher._id}>
+                {teacher.name}
+              </option>
+            ))}
           </select>
           {errors.teacher && (
             <span className="text-red-500 text-xs">{errors.teacher}</span>
